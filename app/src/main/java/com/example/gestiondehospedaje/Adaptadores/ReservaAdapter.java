@@ -9,15 +9,18 @@ import com.example.gestiondehospedaje.R;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ReservaViewHolder> {
+    private static final String TAG = "ReservaAdapter";
     private Context context;
     private List<Reserva> listaReservas;
 
@@ -29,44 +32,63 @@ public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ReservaV
     @NonNull
     @Override
     public ReservaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View vista = LayoutInflater.from(context).inflate(R.layout.item_reserva, parent, false);
-        return new ReservaViewHolder(vista);
+        try {
+            View vista = LayoutInflater.from(context).inflate(R.layout.item_reserva, parent, false);
+            return new ReservaViewHolder(vista);
+        } catch (Exception e) {
+            Log.e(TAG, "Error en onCreateViewHolder: " + e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull ReservaViewHolder holder, int position) {
-        Reserva reserva = listaReservas.get(position);
+        try {
+            Reserva reserva = listaReservas.get(position);
 
-        holder.tvTipo.setText("Tipo: " + reserva.getTipo());
-        holder.tvCliente.setText("Cliente: " + reserva.getCliente());
-        holder.tvFechas.setText("Del " + reserva.getFechaEntrada() + " al " + reserva.getFechaSalida());
+            if (reserva == null) {
+                Log.e(TAG, "Reserva null en posición " + position);
+                return;
+            }
 
-        // Colores según tipo
-        switch (reserva.getTipo()) {
-            case "hotel":
-                holder.itemView.setBackgroundColor(Color.parseColor("#E3F2FD")); // Azul claro
-                break;
-            case "cabana":
-                holder.itemView.setBackgroundColor(Color.parseColor("#E8F5E9")); // Verde claro
-                break;
-            case "glamping":
-                holder.itemView.setBackgroundColor(Color.parseColor("#F3E5F5")); // Morado claro
-                break;
-            default:
-                holder.itemView.setBackgroundColor(Color.WHITE);
+            holder.tvTipo.setText("Tipo: " + reserva.getTipo());
+            holder.tvCliente.setText("Cliente: " + reserva.getCliente());
+            holder.tvFechas.setText("Del " + reserva.getFechaEntrada() + " al " + reserva.getFechaSalida());
+
+            // Colores según tipo
+            switch (reserva.getTipo().toLowerCase()) {
+                case "hotel":
+                    holder.itemView.setBackgroundColor(Color.parseColor("#B3E5FC")); // Azul claro
+                    break;
+                case "cabana":
+                    holder.itemView.setBackgroundColor(Color.parseColor("#C8E6C9")); // Verde claro
+                    break;
+                case "glamping":
+                    holder.itemView.setBackgroundColor(Color.parseColor("#E1BEE7")); // Morado claro
+                    break;
+                default:
+                    holder.itemView.setBackgroundColor(Color.WHITE);
+            }
+
+            // Click para detalle
+            holder.itemView.setOnClickListener(v -> {
+                try {
+                    Intent intent = new Intent(context, ReservaDetalleActivity.class);
+                    intent.putExtra("reserva", reserva);
+                    context.startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error al iniciar ReservaDetalleActivity: " + e.getMessage(), e);
+                    Toast.makeText(context, "Error al abrir el detalle", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Error en onBindViewHolder: " + e.getMessage(), e);
         }
-
-        // Click para detalle (por ahora solo muestra un intent)
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ReservaDetalleActivity.class);
-            intent.putExtra("reserva", reserva); // Enviar la reserva como Serializable
-            context.startActivity(intent);
-        });
     }
 
     @Override
     public int getItemCount() {
-        return listaReservas.size();
+        return listaReservas != null ? listaReservas.size() : 0;
     }
 
     public static class ReservaViewHolder extends RecyclerView.ViewHolder {

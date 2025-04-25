@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@android:color/white"
+    android:elevation="2dp"
+    android:layout_marginBottom="10dp">
+
+    <TextView
+        android:id="@+id/tvCodigoApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Código"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/tvClienteApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cliente"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvFechasApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fechas"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvPrecioApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Precio"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvTipoApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tipo"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvHabitacionApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Habitación"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvDesayunoApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Desayuno"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvHuespedesApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Huéspedes"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvEsperanzaVidaApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Esperanza de Vida"
+        android:layout_marginTop="8dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvDatosAdicionalesApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Datos Adicionales"
+        android:layout_marginTop="4dp" />
+</LinearLayout>

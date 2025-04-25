@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -28,10 +29,15 @@ public class MenuPrincipalActivity extends AppCompatActivity {
             return insets;
         });
 
-        // 👉 Lógica del botón de navegación (fuera del listener de padding)
+        //  Lógica del botón de navegación (fuera del listener de padding)
         Button btnVerReservas = findViewById(R.id.btnVerReservas);
         btnVerReservas.setOnClickListener(v -> {
             Intent intent = new Intent(MenuPrincipalActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
+        Button btnHospedajesApi = findViewById(R.id.btnHospedajesApi);
+        btnHospedajesApi.setOnClickListener(v -> {
+            Intent intent = new Intent(MenuPrincipalActivity.this, ApiReservasActivity.class);
             startActivity(intent);
         });
     }

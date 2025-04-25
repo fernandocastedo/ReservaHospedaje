@@ -16,7 +16,16 @@
         android:textStyle="bold"
         android:textColor="#333"
         android:layout_marginBottom="30dp" />
-
+    <Button
+        android:id="@+id/btnHospedajesApi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hospedajes API"
+        android:textSize="18sp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#03A9F4"
+        android:padding="16dp"
+        android:textColor="#FFFFFF" />
     <Button
         android:id="@+id/btnVerReservas"
         android:layout_width="match_parent"
