@@ -1,5 +1,6 @@
 package com.example.gestiondehospedaje.Adaptadores;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,130 +16,120 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gestiondehospedaje.Activities.DetalleReservaApiActivity;
+import com.example.gestiondehospedaje.Activities.FormularioReservaActivity;
 import com.example.gestiondehospedaje.Modelos.ReservaApi;
 import com.example.gestiondehospedaje.R;
+import com.example.gestiondehospedaje.Repository.ReservaRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ReservaApiAdapter extends RecyclerView.Adapter<ReservaApiAdapter.ReservaViewHolder> {
+public class ReservaApiAdapter
+        extends RecyclerView.Adapter<ReservaApiAdapter.ReservaViewHolder> {
+
+    /* ---------- callback para edición ---------- */
+    public interface OnReservaLongClickListener {
+        void onReservaLongClick(int index, ReservaApi reserva);
+    }
+
+    /* ---------- fields ---------- */
     private static final String TAG = "ReservaApiAdapter";
+    private static final String BASE_URL = "https://raw.githubusercontent.com/";
     private final Context context;
     private final List<ReservaApi> lista;
+    private final OnReservaLongClickListener longClickListener;
 
-    public ReservaApiAdapter(Context context, List<ReservaApi> lista) {
-        this.context = context;
-        this.lista = lista;
+    public ReservaApiAdapter(Context ctx,
+                             List<ReservaApi> data,
+                             OnReservaLongClickListener listener) {
+        this.context           = ctx;
+        this.lista             = data;
+        this.longClickListener = listener;
     }
 
-    @NonNull
-    @Override
-    public ReservaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        try {
-            View vista = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_reserva_api, parent, false);
-            return new ReservaViewHolder(vista);
-        } catch (Exception e) {
-            Log.e(TAG, "Error en onCreateViewHolder: " + e.getMessage(), e);
-            throw e;
-        }
-    }
+    /* ---------- ViewHolder ---------- */
+    static class ReservaViewHolder extends RecyclerView.ViewHolder {
+        TextView tvCodigo, tvCliente;
+        ImageView ivEditar, ivEliminar;
 
-    @Override
-    public void onBindViewHolder(@NonNull ReservaViewHolder holder, int position) {
-        try {
-            ReservaApi reserva = lista.get(position);
-
-            if (reserva == null) {
-                Log.e(TAG, "Reserva null en posición " + position);
-                return;
-            }
-
-            holder.tvCodigo.setText("Código: " + reserva.getCodigo());
-            holder.tvCliente.setText("Cliente: " + reserva.getCliente());
-            holder.tvFechas.setText("Del " + reserva.getFechaEntrada() + " al " + reserva.getFechaSalida());
-            holder.tvPrecio.setText(String.format("Precio Total: $%.2f", reserva.getPrecioTotal()));
-            holder.tvTipo.setText("Tipo: " + reserva.getTipo());
-            holder.tvHabitacion.setText("Habitación: " + reserva.getTipoHabitacion());
-            holder.tvDesayuno.setText("Incluye Desayuno: " + (reserva.isIncluyeDesayuno() ? "Sí" : "No"));
-            holder.tvHuespedes.setText("Huéspedes: " + reserva.getNumeroHuespedes());
-
-            // Información adicional
-            if (reserva.getInformacionAdicional() != null) {
-                holder.tvEsperanzaVida.setText("Esperanza de Vida: " + reserva.getInformacionAdicional().getEsperanzaVida());
-                
-                if (reserva.getInformacionAdicional().getDatos() != null) {
-                    String datosAdicionales = reserva.getInformacionAdicional().getDatos().stream()
-                        .map(dato -> dato.getNombreDato() + ": " + dato.getValor())
-                        .collect(Collectors.joining("\n"));
-                    holder.tvDatosAdicionales.setText(datosAdicionales);
-                }
-            }
-
-            // Establecer color de fondo según el tipo
-            try {
-                switch (reserva.getTipo().toLowerCase()) {
-                    case "hotel":
-                        holder.itemView.setBackgroundColor(Color.parseColor("#B3E5FC")); // Azul claro
-                        break;
-                    case "cabana":
-                        holder.itemView.setBackgroundColor(Color.parseColor("#C8E6C9")); // Verde claro
-                        break;
-                    case "glamping":
-                        holder.itemView.setBackgroundColor(Color.parseColor("#E1BEE7")); // Morado claro
-                        break;
-                    default:
-                        holder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF")); // Blanco
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error al establecer color de fondo: " + e.getMessage());
-                holder.itemView.setBackgroundColor(Color.WHITE); // Color por defecto si hay error
-            }
-
-            // Click para detalle
-            holder.itemView.setOnClickListener(v -> {
-                try {
-                    Intent intent = new Intent(v.getContext(), DetalleReservaApiActivity.class);
-                    intent.putExtra("codigo", reserva.getCodigo());
-                    intent.putExtra("cliente", reserva.getCliente());
-                    intent.putExtra("entrada", reserva.getFechaEntrada());
-                    intent.putExtra("salida", reserva.getFechaSalida());
-                    intent.putExtra("precio", reserva.getPrecioTotal());
-                    intent.putExtra("tipo", reserva.getTipo());
-                    intent.putExtra("habitacion", reserva.getTipoHabitacion());
-                    intent.putExtra("desayuno", reserva.isIncluyeDesayuno());
-                    intent.putExtra("huespedes", reserva.getNumeroHuespedes());
-                    v.getContext().startActivity(intent);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error al iniciar DetalleReservaApiActivity: " + e.getMessage(), e);
-                    Toast.makeText(context, "Error al abrir el detalle", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } catch (Exception e) {
-            Log.e(TAG, "Error en onBindViewHolder: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return lista != null ? lista.size() : 0;
-    }
-
-    public static class ReservaViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCodigo, tvCliente, tvFechas, tvPrecio, tvTipo, tvHabitacion, tvDesayuno, 
-                tvHuespedes, tvEsperanzaVida, tvDatosAdicionales;
-
-        public ReservaViewHolder(@NonNull View itemView) {
+        ReservaViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvCodigo = itemView.findViewById(R.id.tvCodigoApi);
-            tvCliente = itemView.findViewById(R.id.tvClienteApi);
-            tvFechas = itemView.findViewById(R.id.tvFechasApi);
-            tvPrecio = itemView.findViewById(R.id.tvPrecioApi);
-            tvTipo = itemView.findViewById(R.id.tvTipoApi);
-            tvHabitacion = itemView.findViewById(R.id.tvHabitacionApi);
-            tvDesayuno = itemView.findViewById(R.id.tvDesayunoApi);
-            tvHuespedes = itemView.findViewById(R.id.tvHuespedesApi);
-            tvEsperanzaVida = itemView.findViewById(R.id.tvEsperanzaVidaApi);
-            tvDatosAdicionales = itemView.findViewById(R.id.tvDatosAdicionalesApi);
+            tvCodigo   = itemView.findViewById(R.id.tvCodigoApi);
+            tvCliente  = itemView.findViewById(R.id.tvClienteApi);
+            ivEditar   = itemView.findViewById(R.id.ivEditar);
+            ivEliminar = itemView.findViewById(R.id.ivEliminar);
         }
     }
+
+    /* ---------- Adapter overrides ---------- */
+    @NonNull @Override
+    public ReservaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_reserva_api, parent, false);
+        return new ReservaViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ReservaViewHolder h, int pos) {
+        ReservaApi r = lista.get(pos);
+        if (r == null) return;
+
+        h.tvCodigo.setText("Código: " + r.getCodigo());
+        h.tvCliente.setText("Cliente: " + r.getCliente());
+
+        String tipo = r.getTipo();
+        if (tipo != null) {
+            switch (tipo.toLowerCase()) {
+                case "hotel":
+                    h.itemView.setBackgroundColor(Color.parseColor("#B3E5FC"));
+                    break;
+                case "cabana":
+                    h.itemView.setBackgroundColor(Color.parseColor("#C8E6C9"));
+                    break;
+                case "glamping":
+                    h.itemView.setBackgroundColor(Color.parseColor("#E1BEE7"));
+                    break;
+                default:
+                    h.itemView.setBackgroundColor(Color.WHITE);
+            }
+        } else {
+            h.itemView.setBackgroundColor(Color.WHITE);
+        }
+
+        h.itemView.setOnClickListener(v -> {
+            try {
+                Intent i = new Intent(context, DetalleReservaApiActivity.class);
+                i.putExtra("reserva", r);
+                context.startActivity(i);
+            } catch (Exception e) {
+                Log.e(TAG, "detalle", e);
+                Toast.makeText(context, "Error al abrir detalle", Toast.LENGTH_SHORT).show();
+            }
+        });
+        h.ivEditar.setOnClickListener(v -> {
+            Intent i = new Intent(context, FormularioReservaActivity.class);
+            i.putExtra("reserva", r);
+            i.putExtra("indiceEdicion", pos);
+            context.startActivity(i);
+        });
+        h.ivEliminar.setOnClickListener(v -> {
+            new AlertDialog.Builder(context)
+                    .setTitle("Eliminar reserva")
+                    .setMessage("¿Seguro que deseas eliminarla?")
+                    .setPositiveButton("Sí", (dialog, which) -> {
+                        ReservaRepository.getInstance().remove(pos);
+                        notifyItemRemoved(pos);
+                    })
+                    .setNegativeButton("Cancelar", (dialog, which) -> notifyItemChanged(pos))
+                    .show();
+        });
+        h.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                longClickListener.onReservaLongClick(pos, r);
+            }
+            return true;
+        });
+    }
+
+    @Override public int getItemCount() { return lista != null ? lista.size() : 0; }
 }

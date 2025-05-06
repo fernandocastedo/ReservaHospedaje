@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Botón para hacer GET -->
     <Button
         android:id="@+id/btnCargarReservas"
         android:layout_width="match_parent"
@@ -12,9 +14,28 @@
         android:text="Cargar Lista de API"
         android:textSize="16sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerReservasApi"
+    <!-- Contenedor para Recycler + FAB -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerReservasApi"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- FAB para añadir nueva reserva -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:contentDescription="Añadir reserva"
+            app:srcCompat="@drawable/ic_add"
+            app:tint="@android:color/white" />
+    </FrameLayout>
+
 </LinearLayout>

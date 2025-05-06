@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tipos_array">
+        <item>Hotel</item>
+        <item>Cabana</item>
+        <item>Glamping</item>
+    </string-array>
+
+    <string-array name="habitaciones_array">
+        <item>Individual</item>
+        <item>Doble</item>
+        <item>Suite</item>
+    </string-array>
+</resources>

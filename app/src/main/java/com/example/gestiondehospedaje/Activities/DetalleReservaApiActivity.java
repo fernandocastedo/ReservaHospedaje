@@ -1,60 +1,71 @@
 package com.example.gestiondehospedaje.Activities;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import com.example.gestiondehospedaje.R;
-
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.gestiondehospedaje.Modelos.ReservaApi;
+import com.example.gestiondehospedaje.R;
 
 public class DetalleReservaApiActivity extends AppCompatActivity {
 
-    private TextView tvDetalleApi;
+    /* Referencias UI */
+    private TextView tvCodigo, tvCliente, tvFechas, tvPrecio,
+            tvTipo, tvHabitacion, tvDesayuno,
+            tvHuespedes, tvEsperanzaVida, tvDatosAdicionales;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalle_reserva_api);
 
-        tvDetalleApi = findViewById(R.id.tvDetalleApi);
+        /* Enlazar vistas */
+        tvCodigo          = findViewById(R.id.tvCodigoApi);
+        tvCliente         = findViewById(R.id.tvClienteApi);
+        tvFechas          = findViewById(R.id.tvFechasApi);
+        tvPrecio          = findViewById(R.id.tvPrecioApi);
+        tvTipo            = findViewById(R.id.tvTipoApi);
+        tvHabitacion      = findViewById(R.id.tvHabitacionApi);
+        tvDesayuno        = findViewById(R.id.tvDesayunoApi);
+        tvHuespedes       = findViewById(R.id.tvHuespedesApi);
+        tvEsperanzaVida   = findViewById(R.id.tvEsperanzaVidaApi);
+        tvDatosAdicionales= findViewById(R.id.tvDatosAdicionalesApi);
 
-        // Obtener datos del intent
-        String codigo = getIntent().getStringExtra("codigo");
-        String cliente = getIntent().getStringExtra("cliente");
-        String fechaEntrada = getIntent().getStringExtra("entrada");
-        String fechaSalida = getIntent().getStringExtra("salida");
-        double precio = getIntent().getDoubleExtra("precio", 0.0);
-        String tipo = getIntent().getStringExtra("tipo");
-        String habitacion = getIntent().getStringExtra("habitacion");
-        boolean desayuno = getIntent().getBooleanExtra("desayuno", false);
-        int huespedes = getIntent().getIntExtra("huespedes", 0);
+        /* Obtener la reserva parcelable */
+        ReservaApi reserva = getIntent().getParcelableExtra("reserva");
 
-        if (codigo != null && cliente != null) {
-            StringBuilder detalle = new StringBuilder();
-            detalle.append(String.format("Código: %s\n", codigo));
-            detalle.append(String.format("Cliente: %s\n", cliente));
-            detalle.append(String.format("Fecha Entrada: %s\n", fechaEntrada));
-            detalle.append(String.format("Fecha Salida: %s\n", fechaSalida));
-            detalle.append(String.format("Precio Total: $%.2f\n", precio));
-            detalle.append(String.format("Tipo: %s\n", tipo));
-            detalle.append(String.format("Tipo de Habitación: %s\n", habitacion));
-            detalle.append(String.format("Incluye Desayuno: %s\n", desayuno ? "Sí" : "No"));
-            detalle.append(String.format("Número de Huéspedes: %d\n", huespedes));
-
-            // Aplicar estilo al texto
-            tvDetalleApi.setTextSize(16);
-            tvDetalleApi.setPadding(32, 32, 32, 32);
-            tvDetalleApi.setText(detalle.toString());
-        } else {
-            Toast.makeText(this, "Error: Datos incompletos", Toast.LENGTH_SHORT).show();
+        if (reserva == null) {
+            Toast.makeText(this, "Error: reserva no encontrada", Toast.LENGTH_SHORT).show();
             finish();
+            return;
+        }
+
+        /* Mostrar datos básicos */
+        tvCodigo.setText("Código: " + reserva.getCodigo());
+        tvCliente.setText("Cliente: " + reserva.getCliente());
+        tvFechas.setText(reserva.getFechaEntrada() + " → " + reserva.getFechaSalida());
+        tvPrecio.setText(String.format("Precio Total: $%.2f", reserva.getPrecioTotal()));
+        tvTipo.setText("Tipo: " + reserva.getTipo());
+        tvHabitacion.setText("Habitación: " + reserva.getTipoHabitacion());
+        tvDesayuno.setText("Incluye Desayuno: " + (reserva.isIncluyeDesayuno() ? "Sí" : "No"));
+        tvHuespedes.setText("Huéspedes: " + reserva.getNumeroHuespedes());
+
+        /* Información adicional */
+        if (reserva.getInformacionAdicional() != null) {
+            tvEsperanzaVida.setText("Esperanza de Vida: "
+                    + reserva.getInformacionAdicional().getEsperanzaVida());
+
+            // Construir texto con el array de datos
+            StringBuilder sb = new StringBuilder();
+            if (reserva.getInformacionAdicional().getDatos() != null) {
+                for (ReservaApi.DatoAdicional d : reserva.getInformacionAdicional().getDatos()) {
+                    sb.append("• ").append(d.getNombreDato())
+                            .append(": ").append(d.getValor()).append('\n');
+                }
+            }
+            tvDatosAdicionales.setText(sb.toString().trim());
         }
     }
 }
